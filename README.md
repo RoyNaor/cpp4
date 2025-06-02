@@ -1,7 +1,6 @@
 # 🧠 MyContainer – Custom C++ Templated Container with Advanced Iterators
 
 Author: [Roy Naor](mailto:roynaor10@gmail.com)  
-License: MIT  
 Language: C++17  
 Build System: Make
 
@@ -141,11 +140,3 @@ Middle-out order: 6 15 1 7
 - `MyContainer<double>`
 
 Use it with any comparable type!
-
----
-
-## 📝 License
-
-MIT License. Free to use, distribute, and modify.
-
----
