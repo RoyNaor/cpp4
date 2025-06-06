@@ -39,7 +39,7 @@ namespace genericContainer {
                 return data->at(index);
             }
 
-            // Increment operator – moves to next element
+            // Prefix increment – move forward (toward smaller elements)
             Iterator& operator++() {
                 if (index >= data->size()) {
                     throw std::out_of_range("Cannot increment past the end.");
@@ -48,9 +48,79 @@ namespace genericContainer {
                 return *this;
             }
 
-            // Comparison operator – checks if iterators are different
+            // Postfix increment
+            Iterator operator++(int) {
+                Iterator temp = *this;
+                ++(*this);
+                return temp;
+            }
+
+            // Prefix decrement – move backward
+            Iterator& operator--() {
+                if (index == 0) {
+                    throw std::out_of_range("Cannot decrement below 0.");
+                }
+                --index;
+                return *this;
+            }
+
+            // Postfix decrement
+            Iterator operator--(int) {
+                Iterator temp = *this;
+                --(*this);
+                return temp;
+            }
+
+            // Random access via index offset
+            const T& operator[](size_t offset) const {
+                if (index + offset >= data->size()) {
+                    throw std::out_of_range("Random access out of range.");
+                }
+                return data->at(index + offset);
+            }
+
+            // Iterator + offset
+            Iterator operator+(int n) const {
+                if (index + n > data->size()) {
+                    throw std::out_of_range("Iterator + offset out of range.");
+                }
+                return Iterator(data, index + n);
+            }
+
+            // Iterator - offset
+            Iterator operator-(int n) const {
+                if (n > index) {
+                    throw std::out_of_range("Iterator - offset out of range.");
+                }
+                return Iterator(data, index - n);
+            }
+
+            // Iterator += offset
+            Iterator& operator+=(int n) {
+                if (index + n > data->size()) {
+                    throw std::out_of_range("Iterator += out of range.");
+                }
+                index += n;
+                return *this;
+            }
+
+            // Iterator -= offset
+            Iterator& operator-=(int n) {
+                if (n > index) {
+                    throw std::out_of_range("Iterator -= out of range.");
+                }
+                index -= n;
+                return *this;
+            }
+
+            // Inequality comparison – used in loops
             bool operator!=(const Iterator& other) const {
                 return index != other.index || data != other.data;
+            }
+
+            // Equality comparison (optional)
+            bool operator==(const Iterator& other) const {
+                return index == other.index && data == other.data;
             }
         };
 
