@@ -31,7 +31,7 @@ namespace genericContainer {
                 }
             }
 
-            // Dereference operator to access the current element
+            // Dereference operator
             const T& operator*() const {
                 if (index >= data->size()) {
                     throw std::out_of_range("Attempted to dereference out-of-bounds iterator.");
@@ -39,7 +39,7 @@ namespace genericContainer {
                 return data->at(index);
             }
 
-            // Prefix increment operator
+            // Prefix increment (++it)
             Iterator& operator++() {
                 if (index >= data->size()) {
                     throw std::out_of_range("Cannot increment beyond end of data.");
@@ -48,9 +48,79 @@ namespace genericContainer {
                 return *this;
             }
 
-            // Inequality comparison (used in loops)
+            // Postfix increment (it++)
+            Iterator operator++(int) {
+                Iterator temp = *this;
+                ++(*this);
+                return temp;
+            }
+
+            // Prefix decrement (--it)
+            Iterator& operator--() {
+                if (index == 0) {
+                    throw std::out_of_range("Cannot decrement below zero.");
+                }
+                --index;
+                return *this;
+            }
+
+            // Postfix decrement (it--)
+            Iterator operator--(int) {
+                Iterator temp = *this;
+                --(*this);
+                return temp;
+            }
+
+            // Indexing (it[n])
+            const T& operator[](size_t offset) const {
+                if (index + offset >= data->size()) {
+                    throw std::out_of_range("Random access out of range.");
+                }
+                return data->at(index + offset);
+            }
+
+            // Add offset (it + n)
+            Iterator operator+(int n) const {
+                if (index + n > data->size()) {
+                    throw std::out_of_range("Iterator + offset out of range.");
+                }
+                return Iterator(data, index + n);
+            }
+
+            // Subtract offset (it - n)
+            Iterator operator-(int n) const {
+                if (n > index) {
+                    throw std::out_of_range("Iterator - offset out of range.");
+                }
+                return Iterator(data, index - n);
+            }
+
+            // Add and assign (it += n)
+            Iterator& operator+=(int n) {
+                if (index + n > data->size()) {
+                    throw std::out_of_range("Iterator += out of range.");
+                }
+                index += n;
+                return *this;
+            }
+
+            // Subtract and assign (it -= n)
+            Iterator& operator-=(int n) {
+                if (n > index) {
+                    throw std::out_of_range("Iterator -= out of range.");
+                }
+                index -= n;
+                return *this;
+            }
+
+            // Inequality comparison
             bool operator!=(const Iterator& other) const {
                 return index != other.index || data != other.data;
+            }
+
+            // Equality comparison (optional)
+            bool operator==(const Iterator& other) const {
+                return index == other.index && data == other.data;
             }
         };
 
@@ -73,4 +143,4 @@ namespace genericContainer {
 
 } // namespace genericContainer
 
-#endif //EX4_ASCENDINGORDER_HPP
+#endif // EX4_ASCENDINGORDER_HPP
