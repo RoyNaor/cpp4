@@ -19,8 +19,8 @@ namespace genericContainer {
         // Nested iterator class
         class Iterator {
         private:
-            const std::vector<T>* data;  // Pointer to the data
-            size_t index;                // Current index (starting from the back)
+            const std::vector<T>* data;  // Pointer to the copied data
+            size_t index;                // Index from the back (0 is last element, size-1 is first)
 
         public:
             // Constructor
@@ -34,23 +34,93 @@ namespace genericContainer {
             // Dereference operator
             const T& operator*() const {
                 if (index >= data->size()) {
-                    throw std::out_of_range("Dereferencing out of range in ReverseOrder.");
+                    throw std::out_of_range("Dereferencing out of bounds in ReverseOrder.");
                 }
                 return data->at(data->size() - 1 - index);
             }
 
-            // Pre-increment
+            // Prefix increment (++it)
             Iterator& operator++() {
                 if (index >= data->size()) {
-                    throw std::out_of_range("Cannot increment past the end in ReverseOrder.");
+                    throw std::out_of_range("Cannot increment beyond end in ReverseOrder.");
                 }
                 ++index;
+                return *this;
+            }
+
+            // Postfix increment (it++)
+            Iterator operator++(int) {
+                Iterator temp = *this;
+                ++(*this);
+                return temp;
+            }
+
+            // Prefix decrement (--it)
+            Iterator& operator--() {
+                if (index == 0) {
+                    throw std::out_of_range("Cannot decrement before beginning.");
+                }
+                --index;
+                return *this;
+            }
+
+            // Postfix decrement (it--)
+            Iterator operator--(int) {
+                Iterator temp = *this;
+                --(*this);
+                return temp;
+            }
+
+            // Random access: it[n]
+            const T& operator[](size_t offset) const {
+                if (index + offset >= data->size()) {
+                    throw std::out_of_range("Random access out of bounds in ReverseOrder.");
+                }
+                return data->at(data->size() - 1 - (index + offset));
+            }
+
+            // it + n
+            Iterator operator+(int n) const {
+                if (index + n > data->size()) {
+                    throw std::out_of_range("Iterator + offset out of range.");
+                }
+                return Iterator(data, index + n);
+            }
+
+            // it - n
+            Iterator operator-(int n) const {
+                if (n > index) {
+                    throw std::out_of_range("Iterator - offset out of range.");
+                }
+                return Iterator(data, index - n);
+            }
+
+            // it += n
+            Iterator& operator+=(int n) {
+                if (index + n > data->size()) {
+                    throw std::out_of_range("Iterator += out of range.");
+                }
+                index += n;
+                return *this;
+            }
+
+            // it -= n
+            Iterator& operator-=(int n) {
+                if (n > index) {
+                    throw std::out_of_range("Iterator -= out of range.");
+                }
+                index -= n;
                 return *this;
             }
 
             // Inequality comparison
             bool operator!=(const Iterator& other) const {
                 return index != other.index || data != other.data;
+            }
+
+            // Equality comparison
+            bool operator==(const Iterator& other) const {
+                return index == other.index && data == other.data;
             }
         };
 
@@ -62,12 +132,12 @@ namespace genericContainer {
             }
         }
 
-        // Begin iterator – starts from last element
+        // Begin iterator – starts at index 0 (points to last element in actual data)
         Iterator begin() const {
             return Iterator(&dataCopy, 0);
         }
 
-        // End iterator – one past the first element
+        // End iterator – one past the first element (dataCopy.size())
         Iterator end() const {
             return Iterator(&dataCopy, dataCopy.size());
         }
